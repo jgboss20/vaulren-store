@@ -23,6 +23,10 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
+    body.modal-open {
+      overflow: hidden;
+    }
+
     .announcement {
       background: #171714;
       color: #f7f4ed;
@@ -229,6 +233,7 @@
     }
 
     /* SELECTORS */
+
     .selector {
       margin-bottom: 27px;
     }
@@ -236,14 +241,35 @@
     .selector-label {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       margin-bottom: 13px;
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
     }
 
+    .selector-label-right {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
     .selected-value {
       color: #686259;
+    }
+
+    .size-guide-link {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #171714;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      cursor: pointer;
     }
 
     .option-buttons {
@@ -296,6 +322,154 @@
       width: 100%;
     }
 
+    /* SIZE GUIDE MODAL */
+
+    .size-guide-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(23,23,20,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 25px;
+      z-index: 9999;
+    }
+
+    .size-guide-modal.open {
+      display: flex;
+    }
+
+    .size-guide-panel {
+      width: min(900px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: #f7f4ed;
+      padding: 45px;
+      position: relative;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.18);
+    }
+
+    .size-guide-close {
+      position: absolute;
+      top: 22px;
+      right: 25px;
+      border: none;
+      background: transparent;
+      color: #171714;
+      font-size: 25px;
+      font-weight: 300;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .size-guide-eyebrow {
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .size-guide-panel h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 40px;
+      font-weight: normal;
+      margin-bottom: 12px;
+    }
+
+    .size-guide-intro {
+      max-width: 620px;
+      color: #5a554d;
+      font-size: 12px;
+      line-height: 1.8;
+      margin-bottom: 30px;
+    }
+
+    .unit-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 25px;
+    }
+
+    .unit-button {
+      background: transparent;
+      border: 1px solid rgba(0,0,0,0.22);
+      padding: 10px 17px;
+      color: #171714;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+
+    .unit-button.active {
+      background: #171714;
+      color: #f7f4ed;
+      border-color: #171714;
+    }
+
+    .size-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin-bottom: 28px;
+    }
+
+    .size-table {
+      width: 100%;
+      min-width: 650px;
+      border-collapse: collapse;
+      font-size: 11px;
+    }
+
+    .size-table th,
+    .size-table td {
+      border-bottom: 1px solid rgba(0,0,0,0.13);
+      padding: 15px 12px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .size-table th {
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      font-weight: normal;
+    }
+
+    .size-table th:first-child,
+    .size-table td:first-child {
+      text-align: left;
+    }
+
+    .measurement-guide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 35px;
+      border-top: 1px solid rgba(0,0,0,0.13);
+      padding-top: 28px;
+    }
+
+    .measurement-guide h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 22px;
+      font-weight: normal;
+      margin-bottom: 10px;
+    }
+
+    .measurement-guide p {
+      color: #5a554d;
+      font-size: 11px;
+      line-height: 1.8;
+    }
+
+    .tolerance-note {
+      margin-top: 25px;
+      color: #6a655c;
+      font-size: 10px;
+      line-height: 1.7;
+    }
+
+    /* PHILOSOPHY */
+
     .philosophy {
       padding: 130px 8%;
       display: grid;
@@ -346,6 +520,7 @@
     }
 
     @media (max-width: 750px) {
+
       nav {
         height: 75px;
         padding: 0 20px;
@@ -388,6 +563,19 @@
         padding: 50px 30px;
       }
 
+      .size-guide-panel {
+        padding: 38px 22px 30px;
+      }
+
+      .size-guide-panel h2 {
+        font-size: 32px;
+      }
+
+      .measurement-guide {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
       .philosophy {
         grid-template-columns: 1fr;
         gap: 35px;
@@ -409,17 +597,24 @@
   </div>
 
   <nav>
+
     <div class="nav-links">
       <a href="#shop">Shop</a>
       <a href="#about">About</a>
     </div>
 
-    <div class="logo">VAULREN</div>
+    <div class="logo">
+      VAULREN
+    </div>
 
-    <a class="cart" href="#">Cart (0)</a>
+    <a class="cart" href="#">
+      Cart (0)
+    </a>
+
   </nav>
 
   <section class="hero">
+
     <div class="hero-content">
 
       <div class="eyebrow">
@@ -441,20 +636,30 @@
       </a>
 
     </div>
+
   </section>
 
   <section class="statement">
+
     <p>
       Less noise. Better essentials.
       Designed for more.
     </p>
+
   </section>
 
   <section class="product-section" id="shop">
 
     <div class="section-top">
-      <h2>Drop 001</h2>
-      <span>01 / Essential</span>
+
+      <h2>
+        Drop 001
+      </h2>
+
+      <span>
+        01 / Essential
+      </span>
+
     </div>
 
     <div class="product">
@@ -497,15 +702,21 @@
         </p>
 
         <!-- COLOUR -->
+
         <div class="selector">
 
           <div class="selector-label">
-            <span>Colour</span>
+
+            <span>
+              Colour
+            </span>
+
             <span
               class="selected-value"
               id="selected-colour">
               Tan
             </span>
+
           </div>
 
           <div
@@ -516,15 +727,32 @@
         </div>
 
         <!-- SIZE -->
+
         <div class="selector">
 
           <div class="selector-label">
-            <span>Size</span>
-            <span
-              class="selected-value"
-              id="selected-size">
-              Select
+
+            <span>
+              Size
             </span>
+
+            <div class="selector-label-right">
+
+              <button
+                class="size-guide-link"
+                id="open-size-guide"
+                type="button">
+                Size Guide
+              </button>
+
+              <span
+                class="selected-value"
+                id="selected-size">
+                Select
+              </span>
+
+            </div>
+
           </div>
 
           <div
@@ -550,7 +778,9 @@
 
   </section>
 
-  <section class="philosophy" id="about">
+  <section
+    class="philosophy"
+    id="about">
 
     <h2>
       Less<br>
@@ -585,11 +815,188 @@
     </div>
 
     <div class="footer-bottom">
-      <span>© 2026 VAULREN</span>
-      <span>Modern Essentials. Elevated.</span>
+
+      <span>
+        © 2026 VAULREN
+      </span>
+
+      <span>
+        Modern Essentials. Elevated.
+      </span>
+
     </div>
 
   </footer>
+
+
+  <!-- SIZE GUIDE -->
+
+  <div
+    class="size-guide-modal"
+    id="size-guide-modal"
+    aria-hidden="true">
+
+    <div
+      class="size-guide-panel"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="size-guide-title">
+
+      <button
+        class="size-guide-close"
+        id="close-size-guide"
+        type="button"
+        aria-label="Close size guide">
+        ×
+      </button>
+
+      <div class="size-guide-eyebrow">
+        VAULREN / FIT GUIDE
+      </div>
+
+      <h2 id="size-guide-title">
+        Essential Oversized Tee
+      </h2>
+
+      <p class="size-guide-intro">
+        Use the garment measurements below to choose your preferred fit.
+        For the most accurate comparison, measure a T-shirt you already
+        own and like the fit of.
+      </p>
+
+      <div class="unit-toggle">
+
+        <button
+          class="unit-button active"
+          id="cm-button"
+          type="button">
+          CM
+        </button>
+
+        <button
+          class="unit-button"
+          id="in-button"
+          type="button">
+          IN
+        </button>
+
+      </div>
+
+      <div class="size-table-wrap">
+
+        <table class="size-table">
+
+          <thead>
+            <tr>
+              <th>Measurement</th>
+              <th>XS</th>
+              <th>S</th>
+              <th>M</th>
+              <th>L</th>
+              <th>XL</th>
+              <th>2XL</th>
+              <th>3XL</th>
+            </tr>
+          </thead>
+
+          <tbody>
+
+            <tr>
+              <td>Body Length</td>
+
+              <td class="measurement"
+                  data-in="27.75"></td>
+
+              <td class="measurement"
+                  data-in="28.75"></td>
+
+              <td class="measurement"
+                  data-in="29.75"></td>
+
+              <td class="measurement"
+                  data-in="30.75"></td>
+
+              <td class="measurement"
+                  data-in="31.75"></td>
+
+              <td class="measurement"
+                  data-in="32.75"></td>
+
+              <td class="measurement"
+                  data-in="33.75"></td>
+            </tr>
+
+            <tr>
+              <td>Chest Width</td>
+
+              <td class="measurement"
+                  data-in="19.50"></td>
+
+              <td class="measurement"
+                  data-in="21.00"></td>
+
+              <td class="measurement"
+                  data-in="22.50"></td>
+
+              <td class="measurement"
+                  data-in="24.00"></td>
+
+              <td class="measurement"
+                  data-in="26.00"></td>
+
+              <td class="measurement"
+                  data-in="28.00"></td>
+
+              <td class="measurement"
+                  data-in="30.00"></td>
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+      <div class="measurement-guide">
+
+        <div>
+
+          <h3>
+            Body Length
+          </h3>
+
+          <p>
+            Measure from the highest point of the shoulder down
+            to the bottom hem of the garment.
+          </p>
+
+        </div>
+
+        <div>
+
+          <h3>
+            Chest Width
+          </h3>
+
+          <p>
+            Lay the garment flat and measure straight across the
+            chest from side to side. This is a laid-flat width,
+            not the full chest circumference.
+          </p>
+
+        </div>
+
+      </div>
+
+      <p class="tolerance-note">
+        Garment measurements may vary by approximately ±0.5 in
+        (±1.27 cm) due to normal manufacturing tolerances.
+      </p>
+
+    </div>
+
+  </div>
+
 
   <script>
 
@@ -620,9 +1027,7 @@
     let selectedVariant = null;
 
 
-    /* -------------------------
-       VARIANT HELPERS
-    ------------------------- */
+    /* VARIANTS */
 
     function splitVariantTitle(title) {
 
@@ -691,9 +1096,7 @@
     }
 
 
-    /* -------------------------
-       PRODUCT IMAGE
-    ------------------------- */
+    /* PRODUCT IMAGE */
 
     function getFrontImageForColour(
       colour
@@ -786,9 +1189,7 @@
     }
 
 
-    /* -------------------------
-       COLOUR BUTTONS
-    ------------------------- */
+    /* COLOURS */
 
     function createColourButtons() {
 
@@ -816,7 +1217,8 @@
               "button"
             );
 
-          button.type = "button";
+          button.type =
+            "button";
 
           button.className =
             "option-button";
@@ -861,11 +1263,6 @@
       selectedColour =
         colour;
 
-      /*
-        Reset size whenever the
-        customer changes colour.
-      */
-
       selectedSize =
         null;
 
@@ -906,9 +1303,7 @@
     }
 
 
-    /* -------------------------
-       SIZE BUTTONS
-    ------------------------- */
+    /* SIZES */
 
     function createSizeButtons() {
 
@@ -934,7 +1329,8 @@
               "button"
             );
 
-          button.type = "button";
+          button.type =
+            "button";
 
           button.className =
             "option-button";
@@ -944,12 +1340,6 @@
 
           button.textContent =
             size;
-
-          /*
-            If Printify doesn't have
-            this combination enabled,
-            disable the size.
-          */
 
           if (!variant) {
 
@@ -1020,15 +1410,6 @@
           }
         );
 
-      /*
-        This is important for our
-        cart later.
-
-        selectedVariant.id is now the
-        exact Printify variant chosen
-        by the customer.
-      */
-
       console.log(
         "VAULREN VARIANT SELECTED:",
         {
@@ -1041,9 +1422,200 @@
     }
 
 
-    /* -------------------------
-       LOAD PRODUCT
-    ------------------------- */
+    /* SIZE GUIDE */
+
+    const sizeGuideModal =
+      document.getElementById(
+        "size-guide-modal"
+      );
+
+    const openSizeGuide =
+      document.getElementById(
+        "open-size-guide"
+      );
+
+    const closeSizeGuide =
+      document.getElementById(
+        "close-size-guide"
+      );
+
+
+    function openGuide() {
+
+      sizeGuideModal.classList.add(
+        "open"
+      );
+
+      sizeGuideModal.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.classList.add(
+        "modal-open"
+      );
+    }
+
+
+    function closeGuide() {
+
+      sizeGuideModal.classList.remove(
+        "open"
+      );
+
+      sizeGuideModal.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.classList.remove(
+        "modal-open"
+      );
+    }
+
+
+    openSizeGuide.addEventListener(
+      "click",
+      openGuide
+    );
+
+
+    closeSizeGuide.addEventListener(
+      "click",
+      closeGuide
+    );
+
+
+    sizeGuideModal.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          event.target ===
+          sizeGuideModal
+        ) {
+          closeGuide();
+        }
+
+      }
+    );
+
+
+    document.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key === "Escape" &&
+          sizeGuideModal.classList.contains(
+            "open"
+          )
+        ) {
+          closeGuide();
+        }
+
+      }
+    );
+
+
+    /* CM / IN */
+
+    const cmButton =
+      document.getElementById(
+        "cm-button"
+      );
+
+    const inButton =
+      document.getElementById(
+        "in-button"
+      );
+
+
+    function showMeasurements(
+      unit
+    ) {
+
+      document
+        .querySelectorAll(
+          ".measurement"
+        )
+        .forEach(
+          cell => {
+
+            const inches =
+              Number(
+                cell.dataset.in
+              );
+
+            if (
+              unit === "cm"
+            ) {
+
+              const cm =
+                inches * 2.54;
+
+              cell.textContent =
+                cm.toFixed(1) +
+                " cm";
+
+            } else {
+
+              cell.textContent =
+                inches.toFixed(2) +
+                " in";
+
+            }
+
+          }
+        );
+
+      cmButton.classList.toggle(
+        "active",
+        unit === "cm"
+      );
+
+      inButton.classList.toggle(
+        "active",
+        unit === "in"
+      );
+    }
+
+
+    cmButton.addEventListener(
+      "click",
+      function () {
+
+        showMeasurements(
+          "cm"
+        );
+
+      }
+    );
+
+
+    inButton.addEventListener(
+      "click",
+      function () {
+
+        showMeasurements(
+          "in"
+        );
+
+      }
+    );
+
+
+    /*
+      Australia-facing default:
+      centimetres.
+    */
+
+    showMeasurements(
+      "cm"
+    );
+
+
+    /* LOAD PRODUCT */
 
     async function loadVaulrenProduct() {
 
