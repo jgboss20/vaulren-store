@@ -590,6 +590,27 @@
       text-transform: uppercase;
     }
 
+    .cart-item-price {
+      margin-top: 8px;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .cart-subtotal {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .cart-subtotal strong {
+      font-weight: normal;
+      font-size: 14px;
+    }
+
     .quantity-row {
       display: flex;
       align-items: center;
@@ -861,8 +882,8 @@
           Essential Oversized Tee
         </h3>
 
-        <div class="price">
-          Price coming soon
+        <div class="price" id="product-price">
+          Loading price...
         </div>
 
         <p class="description">
@@ -1166,9 +1187,14 @@
 
     <div class="cart-footer">
 
+      <div class="cart-subtotal">
+        <span>Subtotal</span>
+        <strong id="cart-subtotal">US$0.00</strong>
+      </div>
+
       <p class="cart-note">
-        Final pricing and checkout will be available before
-        Drop 001 launches.
+        Prices shown in USD. Shipping and checkout will be available
+        before Drop 001 launches.
       </p>
 
       <button
@@ -1296,6 +1322,125 @@
           );
         }
       );
+    }
+
+
+    /* ------------------------------
+       PRICING
+    ------------------------------ */
+
+    function getVariantPriceCents(variant) {
+      const price = Number(variant && variant.price);
+      return Number.isFinite(price) ? price : null;
+    }
+
+    function formatUSD(cents) {
+      const amount = Number(cents);
+      if (!Number.isFinite(amount)) {
+        return "Price unavailable";
+      }
+
+      return "US$" + (amount / 100).toFixed(2);
+    }
+
+    function getEnabledStoreVariants() {
+      if (!vaulrenProduct) {
+        return [];
+      }
+
+      return vaulrenProduct.variants.filter(
+        variant => {
+          const details = splitVariantTitle(variant.title);
+
+          return (
+            VAULREN_COLOURS.includes(details.colour) &&
+            VAULREN_SIZES.includes(details.size) &&
+            variant.is_enabled === true &&
+            getVariantPriceCents(variant) !== null
+          );
+        }
+      );
+    }
+
+    function updateDisplayedPrice() {
+      const priceElement =
+        document.getElementById("product-price");
+
+      if (!priceElement) {
+        return;
+      }
+
+      if (selectedVariant) {
+        const exactPrice =
+          getVariantPriceCents(selectedVariant);
+
+        priceElement.textContent =
+          exactPrice === null
+            ? "Price unavailable"
+            : formatUSD(exactPrice);
+
+        return;
+      }
+
+      const prices =
+        getEnabledStoreVariants()
+          .map(getVariantPriceCents)
+          .filter(price => price !== null);
+
+      if (!prices.length) {
+        priceElement.textContent =
+          "Price unavailable";
+        return;
+      }
+
+      const minimum = Math.min(...prices);
+      const maximum = Math.max(...prices);
+
+      priceElement.textContent =
+        minimum === maximum
+          ? formatUSD(minimum)
+          : `From ${formatUSD(minimum)}`;
+    }
+
+    function syncCartPricesFromProduct() {
+      if (!vaulrenProduct || !cart.length) {
+        return;
+      }
+
+      let changed = false;
+
+      cart.forEach(item => {
+        if (
+          String(item.productId) !==
+          String(VAULREN_PRODUCT_ID)
+        ) {
+          return;
+        }
+
+        const variant =
+          vaulrenProduct.variants.find(
+            productVariant =>
+              String(productVariant.id) ===
+              String(item.variantId)
+          );
+
+        const livePrice =
+          getVariantPriceCents(variant);
+
+        if (
+          livePrice !== null &&
+          item.priceCents !== livePrice
+        ) {
+          item.priceCents = livePrice;
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        saveCart();
+      } else {
+        renderCart();
+      }
     }
 
 
@@ -1536,6 +1681,7 @@
       );
 
       createSizeButtons();
+      updateDisplayedPrice();
     }
 
 
@@ -1636,6 +1782,8 @@
         "selection-message"
       ).textContent =
         `${selectedColour} / ${size}`;
+
+      updateDisplayedPrice();
 
       document
         .querySelectorAll(
@@ -1769,9 +1917,20 @@
             String(variantId)
         );
 
+      const selectedPriceCents =
+        getVariantPriceCents(selectedVariant);
+
+      if (selectedPriceCents === null) {
+        message.textContent =
+          "Price temporarily unavailable";
+        return;
+      }
+
       if (existingItem) {
 
         existingItem.quantity += 1;
+        existingItem.priceCents =
+          selectedPriceCents;
 
       } else {
 
@@ -1793,6 +1952,9 @@
 
           quantity:
             1,
+
+          priceCents:
+            selectedPriceCents,
 
           image:
             getImageUrlForColour(
@@ -1969,6 +2131,32 @@
 
       container.innerHTML = "";
 
+      const subtotalElement =
+        document.getElementById(
+          "cart-subtotal"
+        );
+
+      const subtotalCents =
+        cart.reduce(
+          (total, item) => {
+            const price =
+              Number(item.priceCents);
+
+            if (!Number.isFinite(price)) {
+              return total;
+            }
+
+            return total +
+              (price * item.quantity);
+          },
+          0
+        );
+
+      if (subtotalElement) {
+        subtotalElement.textContent =
+          formatUSD(subtotalCents);
+      }
+
       if (!cart.length) {
 
         container.innerHTML = `
@@ -2043,6 +2231,25 @@
 
           variantDetails.textContent =
             `${item.colour} / ${item.size}`;
+
+
+          const itemPrice =
+            document.createElement(
+              "div"
+            );
+
+          itemPrice.className =
+            "cart-item-price";
+
+          itemPrice.textContent =
+            Number.isFinite(
+              Number(item.priceCents)
+            )
+              ? formatUSD(
+                  Number(item.priceCents) *
+                  item.quantity
+                )
+              : "Price updating...";
 
 
           const quantityRow =
@@ -2184,6 +2391,10 @@
 
           details.appendChild(
             variantDetails
+          );
+
+          details.appendChild(
+            itemPrice
           );
 
           details.appendChild(
@@ -2450,6 +2661,9 @@
 
         createSizeButtons();
 
+        updateDisplayedPrice();
+        syncCartPricesFromProduct();
+
       } catch (error) {
 
         console.error(
@@ -2461,6 +2675,11 @@
           "selection-message"
         ).textContent =
           "Product temporarily unavailable";
+
+        document.getElementById(
+          "product-price"
+        ).textContent =
+          "Price temporarily unavailable";
       }
     }
 
