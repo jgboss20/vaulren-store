@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>VAULREN — Modern Essentials</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #f2eee6;
+      color: #171714;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    /* ANNOUNCEMENT */
+    .announcement {
+      background: #171714;
+      color: #f7f4ed;
+      text-align: center;
+      padding: 9px 15px;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* NAVIGATION */
+    nav {
+      height: 88px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 6%;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+    }
+
+    .nav-links a,
+    .cart {
+      color: #171714;
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+    }
+
+    .logo {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 27px;
+      font-weight: normal;
+      letter-spacing: 9px;
+    }
+
+    /* HERO */
+    .hero {
+      min-height: 78vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 80px 20px;
+      background:
+        linear-gradient(
+          rgba(232, 223, 207, 0.25),
+          rgba(232, 223, 207, 0.25)
+        ),
+        #ded4c3;
+    }
+
+    .hero-content {
+      max-width: 800px;
+    }
+
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 25px;
+    }
+
+    h1 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(52px, 8vw, 105px);
+      font-weight: normal;
+      line-height: 0.95;
+      letter-spacing: -3px;
+    }
+
+    .hero p {
+      max-width: 520px;
+      margin: 28px auto;
+      font-size: 14px;
+      line-height: 1.8;
+      color: #4d4942;
+    }
+
+    .button {
+      display: inline-block;
+      background: #171714;
+      color: #fff;
+      padding: 16px 32px;
+      text-decoration: none;
+      font-size: 10px;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      transition: 0.25s;
+    }
+
+    .button:hover {
+      background: #3b3934;
+    }
+
+    /* BRAND STATEMENT */
+    .statement {
+      background: #171714;
+      color: #f4f0e7;
+      padding: 110px 8%;
+      text-align: center;
+    }
+
+    .statement p {
+      max-width: 850px;
+      margin: auto;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(30px, 4vw, 55px);
+      line-height: 1.25;
+    }
+
+    /* PRODUCT */
+    .product-section {
+      padding: 110px 7%;
+    }
+
+    .section-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin-bottom: 45px;
+    }
+
+    .section-top h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: normal;
+      font-size: 38px;
+    }
+
+    .section-top span {
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .product {
+      display: grid;
+      grid-template-columns: 1.25fr 0.75fr;
+      min-height: 600px;
+      background: #e3dacb;
+    }
+
+    .product-image {
+      min-height: 600px;
+      background: #d3c5af;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .product-image span {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      letter-spacing: 5px;
+      opacity: 0.45;
+    }
+
+    .product-info {
+      padding: 70px 55px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .product-number {
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .product-info h3 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 42px;
+      font-weight: normal;
+      margin-bottom: 18px;
+    }
+
+    .price {
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .description {
+      color: #555047;
+      font-size: 13px;
+      line-height: 1.8;
+      margin-bottom: 35px;
+    }
+
+    .coming-soon {
+      border-top: 1px solid rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(0,0,0,0.15);
+      padding: 18px 0;
+      margin-bottom: 30px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    /* PHILOSOPHY */
+    .philosophy {
+      padding: 130px 8%;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      background: #f7f4ed;
+    }
+
+    .philosophy h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 48px;
+      font-weight: normal;
+    }
+
+    .philosophy-copy {
+      max-width: 500px;
+    }
+
+    .philosophy-copy p {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #555047;
+      margin-bottom: 25px;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #171714;
+      color: #f7f4ed;
+      padding: 75px 7% 35px;
+    }
+
+    .footer-logo {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(42px, 8vw, 95px);
+      letter-spacing: 12px;
+      margin-bottom: 60px;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid #3a3935;
+      padding-top: 25px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 9px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: #aaa69e;
+    }
+
+    /* MOBILE */
+    @media (max-width: 750px) {
+      nav {
+        height: 75px;
+        padding: 0 20px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .logo {
+        font-size: 21px;
+        letter-spacing: 6px;
+      }
+
+      .cart {
+        margin-left: auto;
+      }
+
+      .hero {
+        min-height: 72vh;
+      }
+
+      h1 {
+        letter-spacing: -1px;
+      }
+
+      .product {
+        grid-template-columns: 1fr;
+      }
+
+      .product-image {
+        min-height: 450px;
+      }
+
+      .product-info {
+        padding: 50px 30px;
+      }
+
+      .philosophy {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        padding: 90px 8%;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="announcement">
+    VAULREN — DROP 001
+  </div>
+
+  <nav>
+    <div class="nav-links">
+      <a href="#shop">Shop</a>
+      <a href="#about">About</a>
+    </div>
+
+    <div class="logo">VAULREN</div>
+
+    <a class="cart" href="#">Cart (0)</a>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">VAULREN / 2026</div>
+
+      <h1>Modern Essentials.<br>Elevated.</h1>
+
+      <p>
+        Considered silhouettes. Refined simplicity.
+        Modern clothing designed to make the everyday feel elevated.
+      </p>
+
+      <a href="#shop" class="button">Discover Drop 001</a>
+    </div>
+  </section>
+
+  <section class="statement">
+    <p>
+      Less noise. Better essentials.
+      Designed for more.
+    </p>
+  </section>
+
+  <section class="product-section" id="shop">
+
+    <div class="section-top">
+      <h2>Drop 001</h2>
+      <span>01 / Essential</span>
+    </div>
+
+    <div class="product">
+
+      <div class="product-image">
+        <span>VAULREN</span>
+      </div>
+
+      <div class="product-info">
+
+        <div class="product-number">
+          Product 001
+        </div>
+
+        <h3>Essential Oversized Tee</h3>
+
+        <div class="price">
+          Price coming soon
+        </div>
+
+        <p class="description">
+          A heavyweight oversized essential built around simplicity.
+          Relaxed proportions, dropped shoulders and understated
+          VAULREN detailing create a refined everyday silhouette.
+        </p>
+
+        <div class="coming-soon">
+          Drop 001 — Coming Soon
+        </div>
+
+        <a href="#" class="button">
+          Coming Soon
+        </a>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <section class="philosophy" id="about">
+
+    <h2>
+      Less<br>
+      Ordinary.
+    </h2>
+
+    <div class="philosophy-copy">
+
+      <p>
+        VAULREN is built around a simple idea: everyday clothing
+        should feel considered.
+      </p>
+
+      <p>
+        Through modern proportions, restrained branding and a
+        neutral palette, we create elevated essentials without
+        unnecessary excess.
+      </p>
+
+      <p>
+        Elevated for everyday.
+      </p>
+
+    </div>
+
+  </section>
+
+  <footer>
+
+    <div class="footer-logo">
+      VAULREN
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2026 VAULREN</span>
+      <span>Modern Essentials. Elevated.</span>
+    </div>
+
+  </footer>
+
+</body>
+</html>
