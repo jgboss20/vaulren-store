@@ -42,6 +42,7 @@
       justify-content: space-between;
       padding: 0 6%;
       border-bottom: 1px solid rgba(0,0,0,0.12);
+      position: relative;
     }
 
     .nav-links {
@@ -76,12 +77,7 @@
       justify-content: center;
       text-align: center;
       padding: 80px 20px;
-      background:
-        linear-gradient(
-          rgba(232, 223, 207, 0.25),
-          rgba(232, 223, 207, 0.25)
-        ),
-        #ded4c3;
+      background: #ded4c3;
     }
 
     .hero-content {
@@ -121,13 +117,15 @@
       letter-spacing: 2.5px;
       text-transform: uppercase;
       transition: 0.25s;
+      border: none;
+      cursor: pointer;
     }
 
     .button:hover {
       background: #3b3934;
     }
 
-    /* BRAND STATEMENT */
+    /* STATEMENT */
     .statement {
       background: #171714;
       color: #f4f0e7;
@@ -192,6 +190,13 @@
       display: block;
     }
 
+    .loading-text {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 16px;
+      letter-spacing: 3px;
+      opacity: 0.45;
+    }
+
     .product-info {
       padding: 70px 55px;
       display: flex;
@@ -225,6 +230,50 @@
       margin-bottom: 35px;
     }
 
+    /* COLOUR SELECTOR */
+    .selector-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 13px;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    #selected-colour {
+      color: #686259;
+    }
+
+    .colour-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 30px;
+    }
+
+    .colour-button {
+      background: transparent;
+      color: #171714;
+      border: 1px solid rgba(0,0,0,0.22);
+      padding: 12px 16px;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9px;
+      letter-spacing: 1.3px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .colour-button:hover {
+      border-color: #171714;
+    }
+
+    .colour-button.active {
+      background: #171714;
+      color: #f7f4ed;
+      border-color: #171714;
+    }
+
     .coming-soon {
       border-top: 1px solid rgba(0,0,0,0.15);
       border-bottom: 1px solid rgba(0,0,0,0.15);
@@ -233,14 +282,6 @@
       font-size: 10px;
       letter-spacing: 2px;
       text-transform: uppercase;
-    }
-
-    /* LOADING */
-    .loading-text {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 16px;
-      letter-spacing: 3px;
-      opacity: 0.45;
     }
 
     /* PHILOSOPHY */
@@ -409,7 +450,8 @@
 
     <div class="product">
 
-      <div class="product-image" id="product-image-container">
+      <div class="product-image">
+
         <span class="loading-text" id="product-loading">
           VAULREN
         </span>
@@ -418,8 +460,9 @@
           id="product-image"
           src=""
           alt="VAULREN Essential Oversized Tee"
-          style="display: none;"
+          style="display:none;"
         >
+
       </div>
 
       <div class="product-info">
@@ -428,7 +471,7 @@
           Product 001
         </div>
 
-        <h3 id="product-title">
+        <h3>
           Essential Oversized Tee
         </h3>
 
@@ -441,6 +484,16 @@
           Clean proportions and understated VAULREN branding create a
           versatile piece designed for everyday wear.
         </p>
+
+        <div class="selector-label">
+          <span>Colour</span>
+          <span id="selected-colour">Tan</span>
+        </div>
+
+        <div
+          class="colour-options"
+          id="colour-options">
+        </div>
 
         <div class="coming-soon">
           Drop 001 — Coming Soon
@@ -466,8 +519,8 @@
     <div class="philosophy-copy">
 
       <p>
-        VAULREN is built around a simple idea: everyday clothing
-        should feel considered.
+        VAULREN is built around a simple idea:
+        everyday clothing should feel considered.
       </p>
 
       <p>
@@ -501,51 +554,191 @@
     const VAULREN_API =
       "https://vaulren-api.jaiguptasydney.workers.dev/";
 
-    async function loadVaulrenProduct() {
-      try {
-        const response = await fetch(VAULREN_API);
+    const VAULREN_COLOURS = [
+      "Tan",
+      "Light Olive",
+      "Bone",
+      "White"
+    ];
 
-        if (!response.ok) {
-          throw new Error("Could not load VAULREN product.");
+    let vaulrenProduct = null;
+
+    function getVariantsForColour(colour) {
+      return vaulrenProduct.variants.filter((variant) => {
+        return (
+          variant.is_enabled === true &&
+          variant.title
+            .toLowerCase()
+            .endsWith("/ " + colour.toLowerCase())
+        );
+      });
+    }
+
+    function getFrontImageForColour(colour) {
+
+      const variants =
+        getVariantsForColour(colour);
+
+      if (!variants.length) {
+        return null;
+      }
+
+      const variantIds =
+        variants.map((variant) => variant.id);
+
+      /*
+        Printify reports these mockups as position "other",
+        so we identify the front image using camera_label=front
+        and then verify that its variant IDs belong to the
+        selected colour.
+      */
+
+      const frontImage =
+        vaulrenProduct.images.find((image) => {
+
+          const isFront =
+            image.src.includes("camera_label=front") ||
+            image.mockup_id.endsWith("_front");
+
+          const belongsToColour =
+            image.variant_ids.some((id) =>
+              variantIds.includes(id)
+            );
+
+          return isFront && belongsToColour;
+        });
+
+      return frontImage || null;
+    }
+
+    function showColour(colour) {
+
+      const image =
+        getFrontImageForColour(colour);
+
+      if (!image) {
+        console.warn(
+          "No VAULREN mockup found for:",
+          colour
+        );
+
+        return;
+      }
+
+      const productImage =
+        document.getElementById("product-image");
+
+      const loadingText =
+        document.getElementById("product-loading");
+
+      productImage.style.opacity = "0.4";
+
+      productImage.onload = function () {
+        loadingText.style.display = "none";
+        productImage.style.display = "block";
+        productImage.style.opacity = "1";
+      };
+
+      productImage.src = image.src;
+
+      document.getElementById(
+        "selected-colour"
+      ).textContent = colour;
+
+      document
+        .querySelectorAll(".colour-button")
+        .forEach((button) => {
+
+          button.classList.toggle(
+            "active",
+            button.dataset.colour === colour
+          );
+
+        });
+    }
+
+    function createColourButtons() {
+
+      const container =
+        document.getElementById("colour-options");
+
+      container.innerHTML = "";
+
+      VAULREN_COLOURS.forEach((colour) => {
+
+        /*
+          Only show the colour if Printify actually
+          has enabled variants for it.
+        */
+
+        if (
+          getVariantsForColour(colour).length === 0
+        ) {
+          return;
         }
 
-        const product = await response.json();
+        const button =
+          document.createElement("button");
+
+        button.type = "button";
+
+        button.className =
+          "colour-button";
+
+        button.dataset.colour =
+          colour;
+
+        button.textContent =
+          colour;
+
+        button.addEventListener(
+          "click",
+          function () {
+            showColour(colour);
+          }
+        );
+
+        container.appendChild(button);
+
+      });
+    }
+
+    async function loadVaulrenProduct() {
+
+      try {
+
+        const response =
+          await fetch(VAULREN_API);
+
+        if (!response.ok) {
+          throw new Error(
+            "Could not load VAULREN product."
+          );
+        }
+
+        vaulrenProduct =
+          await response.json();
 
         console.log(
           "VAULREN PRODUCT CONNECTED:",
-          product
+          vaulrenProduct
         );
 
-        const productImage =
-          document.getElementById("product-image");
-
-        const loadingText =
-          document.getElementById("product-loading");
+        createColourButtons();
 
         /*
-          Load the first real Printify mockup.
-          We will check which mockup Printify puts first
-          before finalising the product gallery.
+          Tan is the default VAULREN colour.
         */
-        if (
-          product.images &&
-          product.images.length > 0 &&
-          product.images[0].src
-        ) {
-          productImage.src =
-            product.images[0].src;
 
-          productImage.onload = function () {
-            loadingText.style.display = "none";
-            productImage.style.display = "block";
-          };
-        }
+        showColour("Tan");
 
       } catch (error) {
+
         console.error(
           "VAULREN API ERROR:",
           error
         );
+
       }
     }
 
