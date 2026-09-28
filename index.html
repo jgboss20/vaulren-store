@@ -23,7 +23,6 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* ANNOUNCEMENT */
     .announcement {
       background: #171714;
       color: #f7f4ed;
@@ -34,7 +33,6 @@
       text-transform: uppercase;
     }
 
-    /* NAVIGATION */
     nav {
       height: 88px;
       display: flex;
@@ -69,7 +67,6 @@
       letter-spacing: 9px;
     }
 
-    /* HERO */
     .hero {
       min-height: 78vh;
       display: flex;
@@ -109,6 +106,7 @@
 
     .button {
       display: inline-block;
+      width: auto;
       background: #171714;
       color: #fff;
       padding: 16px 32px;
@@ -119,13 +117,13 @@
       transition: 0.25s;
       border: none;
       cursor: pointer;
+      text-align: center;
     }
 
     .button:hover {
       background: #3b3934;
     }
 
-    /* STATEMENT */
     .statement {
       background: #171714;
       color: #f4f0e7;
@@ -141,7 +139,6 @@
       line-height: 1.25;
     }
 
-    /* PRODUCT */
     .product-section {
       padding: 110px 7%;
     }
@@ -188,6 +185,7 @@
       max-height: 750px;
       object-fit: contain;
       display: block;
+      transition: opacity 0.2s;
     }
 
     .loading-text {
@@ -230,7 +228,11 @@
       margin-bottom: 35px;
     }
 
-    /* COLOUR SELECTOR */
+    /* SELECTORS */
+    .selector {
+      margin-bottom: 27px;
+    }
+
     .selector-label {
       display: flex;
       justify-content: space-between;
@@ -240,22 +242,22 @@
       text-transform: uppercase;
     }
 
-    #selected-colour {
+    .selected-value {
       color: #686259;
     }
 
-    .colour-options {
+    .option-buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 9px;
-      margin-bottom: 30px;
     }
 
-    .colour-button {
+    .option-button {
+      min-width: 57px;
       background: transparent;
       color: #171714;
       border: 1px solid rgba(0,0,0,0.22);
-      padding: 12px 16px;
+      padding: 12px 15px;
       font-family: Arial, Helvetica, sans-serif;
       font-size: 9px;
       letter-spacing: 1.3px;
@@ -264,14 +266,20 @@
       transition: 0.2s;
     }
 
-    .colour-button:hover {
+    .option-button:hover {
       border-color: #171714;
     }
 
-    .colour-button.active {
+    .option-button.active {
       background: #171714;
       color: #f7f4ed;
       border-color: #171714;
+    }
+
+    .option-button:disabled {
+      opacity: 0.28;
+      cursor: not-allowed;
+      text-decoration: line-through;
     }
 
     .coming-soon {
@@ -284,7 +292,10 @@
       text-transform: uppercase;
     }
 
-    /* PHILOSOPHY */
+    .product-action {
+      width: 100%;
+    }
+
     .philosophy {
       padding: 130px 8%;
       display: grid;
@@ -310,7 +321,6 @@
       margin-bottom: 25px;
     }
 
-    /* FOOTER */
     footer {
       background: #171714;
       color: #f7f4ed;
@@ -335,7 +345,6 @@
       color: #aaa69e;
     }
 
-    /* MOBILE */
     @media (max-width: 750px) {
       nav {
         height: 75px;
@@ -452,7 +461,9 @@
 
       <div class="product-image">
 
-        <span class="loading-text" id="product-loading">
+        <span
+          class="loading-text"
+          id="product-loading">
           VAULREN
         </span>
 
@@ -485,23 +496,53 @@
           versatile piece designed for everyday wear.
         </p>
 
-        <div class="selector-label">
-          <span>Colour</span>
-          <span id="selected-colour">Tan</span>
+        <!-- COLOUR -->
+        <div class="selector">
+
+          <div class="selector-label">
+            <span>Colour</span>
+            <span
+              class="selected-value"
+              id="selected-colour">
+              Tan
+            </span>
+          </div>
+
+          <div
+            class="option-buttons"
+            id="colour-options">
+          </div>
+
         </div>
 
-        <div
-          class="colour-options"
-          id="colour-options">
+        <!-- SIZE -->
+        <div class="selector">
+
+          <div class="selector-label">
+            <span>Size</span>
+            <span
+              class="selected-value"
+              id="selected-size">
+              Select
+            </span>
+          </div>
+
+          <div
+            class="option-buttons"
+            id="size-options">
+          </div>
+
         </div>
 
         <div class="coming-soon">
           Drop 001 — Coming Soon
         </div>
 
-        <a href="#" class="button">
+        <button
+          class="button product-action"
+          type="button">
           Coming Soon
-        </a>
+        </button>
 
       </div>
 
@@ -551,6 +592,7 @@
   </footer>
 
   <script>
+
     const VAULREN_API =
       "https://vaulren-api.jaiguptasydney.workers.dev/";
 
@@ -561,159 +603,463 @@
       "White"
     ];
 
+    const VAULREN_SIZES = [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "2XL",
+      "3XL"
+    ];
+
     let vaulrenProduct = null;
 
-    function getVariantsForColour(colour) {
-      return vaulrenProduct.variants.filter((variant) => {
-        return (
-          variant.is_enabled === true &&
-          variant.title
-            .toLowerCase()
-            .endsWith("/ " + colour.toLowerCase())
+    let selectedColour = "Tan";
+    let selectedSize = null;
+    let selectedVariant = null;
+
+
+    /* -------------------------
+       VARIANT HELPERS
+    ------------------------- */
+
+    function splitVariantTitle(title) {
+
+      const parts =
+        title.split("/").map(
+          part => part.trim()
         );
-      });
+
+      return {
+        size: parts[0] || "",
+        colour: parts[1] || ""
+      };
     }
 
-    function getFrontImageForColour(colour) {
+
+    function getVariant(
+      colour,
+      size,
+      enabledOnly = true
+    ) {
+
+      return vaulrenProduct.variants.find(
+        variant => {
+
+          const details =
+            splitVariantTitle(
+              variant.title
+            );
+
+          const correctVariant =
+            details.colour === colour &&
+            details.size === size;
+
+          if (!correctVariant) {
+            return false;
+          }
+
+          if (enabledOnly) {
+            return variant.is_enabled === true;
+          }
+
+          return true;
+        }
+      );
+    }
+
+
+    function getEnabledVariantsForColour(
+      colour
+    ) {
+
+      return vaulrenProduct.variants.filter(
+        variant => {
+
+          const details =
+            splitVariantTitle(
+              variant.title
+            );
+
+          return (
+            details.colour === colour &&
+            variant.is_enabled === true
+          );
+        }
+      );
+    }
+
+
+    /* -------------------------
+       PRODUCT IMAGE
+    ------------------------- */
+
+    function getFrontImageForColour(
+      colour
+    ) {
 
       const variants =
-        getVariantsForColour(colour);
+        getEnabledVariantsForColour(
+          colour
+        );
 
       if (!variants.length) {
         return null;
       }
 
       const variantIds =
-        variants.map((variant) => variant.id);
-
-      /*
-        Printify reports these mockups as position "other",
-        so we identify the front image using camera_label=front
-        and then verify that its variant IDs belong to the
-        selected colour.
-      */
+        variants.map(
+          variant => variant.id
+        );
 
       const frontImage =
-        vaulrenProduct.images.find((image) => {
+        vaulrenProduct.images.find(
+          image => {
 
-          const isFront =
-            image.src.includes("camera_label=front") ||
-            image.mockup_id.endsWith("_front");
+            const isFront =
+              image.src.includes(
+                "camera_label=front"
+              ) ||
+              image.mockup_id.endsWith(
+                "_front"
+              );
 
-          const belongsToColour =
-            image.variant_ids.some((id) =>
-              variantIds.includes(id)
+            const correctColour =
+              image.variant_ids.some(
+                id =>
+                  variantIds.includes(id)
+              );
+
+            return (
+              isFront &&
+              correctColour
             );
-
-          return isFront && belongsToColour;
-        });
+          }
+        );
 
       return frontImage || null;
     }
 
-    function showColour(colour) {
+
+    function updateProductImage(
+      colour
+    ) {
 
       const image =
-        getFrontImageForColour(colour);
-
-      if (!image) {
-        console.warn(
-          "No VAULREN mockup found for:",
+        getFrontImageForColour(
           colour
         );
 
+      if (!image) {
         return;
       }
 
       const productImage =
-        document.getElementById("product-image");
+        document.getElementById(
+          "product-image"
+        );
 
       const loadingText =
-        document.getElementById("product-loading");
+        document.getElementById(
+          "product-loading"
+        );
 
-      productImage.style.opacity = "0.4";
+      productImage.style.opacity =
+        "0.35";
 
-      productImage.onload = function () {
-        loadingText.style.display = "none";
-        productImage.style.display = "block";
-        productImage.style.opacity = "1";
-      };
+      productImage.onload =
+        function () {
 
-      productImage.src = image.src;
+          loadingText.style.display =
+            "none";
 
-      document.getElementById(
-        "selected-colour"
-      ).textContent = colour;
+          productImage.style.display =
+            "block";
 
-      document
-        .querySelectorAll(".colour-button")
-        .forEach((button) => {
+          productImage.style.opacity =
+            "1";
+        };
 
-          button.classList.toggle(
-            "active",
-            button.dataset.colour === colour
-          );
-
-        });
+      productImage.src =
+        image.src;
     }
+
+
+    /* -------------------------
+       COLOUR BUTTONS
+    ------------------------- */
 
     function createColourButtons() {
 
       const container =
-        document.getElementById("colour-options");
+        document.getElementById(
+          "colour-options"
+        );
 
       container.innerHTML = "";
 
-      VAULREN_COLOURS.forEach((colour) => {
+      VAULREN_COLOURS.forEach(
+        colour => {
 
-        /*
-          Only show the colour if Printify actually
-          has enabled variants for it.
-        */
+          const variants =
+            getEnabledVariantsForColour(
+              colour
+            );
 
-        if (
-          getVariantsForColour(colour).length === 0
-        ) {
-          return;
+          if (!variants.length) {
+            return;
+          }
+
+          const button =
+            document.createElement(
+              "button"
+            );
+
+          button.type = "button";
+
+          button.className =
+            "option-button";
+
+          button.dataset.colour =
+            colour;
+
+          button.textContent =
+            colour;
+
+          if (
+            colour === selectedColour
+          ) {
+            button.classList.add(
+              "active"
+            );
+          }
+
+          button.addEventListener(
+            "click",
+            function () {
+
+              selectColour(
+                colour
+              );
+
+            }
+          );
+
+          container.appendChild(
+            button
+          );
         }
+      );
+    }
 
-        const button =
-          document.createElement("button");
 
-        button.type = "button";
+    function selectColour(
+      colour
+    ) {
 
-        button.className =
-          "colour-button";
+      selectedColour =
+        colour;
 
-        button.dataset.colour =
-          colour;
+      /*
+        Reset size whenever the
+        customer changes colour.
+      */
 
-        button.textContent =
-          colour;
+      selectedSize =
+        null;
 
-        button.addEventListener(
-          "click",
-          function () {
-            showColour(colour);
+      selectedVariant =
+        null;
+
+      document.getElementById(
+        "selected-colour"
+      ).textContent =
+        colour;
+
+      document.getElementById(
+        "selected-size"
+      ).textContent =
+        "Select";
+
+      document
+        .querySelectorAll(
+          "#colour-options .option-button"
+        )
+        .forEach(
+          button => {
+
+            button.classList.toggle(
+              "active",
+              button.dataset.colour ===
+                colour
+            );
+
           }
         );
 
-        container.appendChild(button);
+      updateProductImage(
+        colour
+      );
 
-      });
+      createSizeButtons();
     }
+
+
+    /* -------------------------
+       SIZE BUTTONS
+    ------------------------- */
+
+    function createSizeButtons() {
+
+      const container =
+        document.getElementById(
+          "size-options"
+        );
+
+      container.innerHTML = "";
+
+      VAULREN_SIZES.forEach(
+        size => {
+
+          const variant =
+            getVariant(
+              selectedColour,
+              size,
+              true
+            );
+
+          const button =
+            document.createElement(
+              "button"
+            );
+
+          button.type = "button";
+
+          button.className =
+            "option-button";
+
+          button.dataset.size =
+            size;
+
+          button.textContent =
+            size;
+
+          /*
+            If Printify doesn't have
+            this combination enabled,
+            disable the size.
+          */
+
+          if (!variant) {
+
+            button.disabled =
+              true;
+
+          } else {
+
+            button.addEventListener(
+              "click",
+              function () {
+
+                selectSize(
+                  size
+                );
+
+              }
+            );
+          }
+
+          container.appendChild(
+            button
+          );
+        }
+      );
+    }
+
+
+    function selectSize(
+      size
+    ) {
+
+      const variant =
+        getVariant(
+          selectedColour,
+          size,
+          true
+        );
+
+      if (!variant) {
+        return;
+      }
+
+      selectedSize =
+        size;
+
+      selectedVariant =
+        variant;
+
+      document.getElementById(
+        "selected-size"
+      ).textContent =
+        size;
+
+      document
+        .querySelectorAll(
+          "#size-options .option-button"
+        )
+        .forEach(
+          button => {
+
+            button.classList.toggle(
+              "active",
+              button.dataset.size ===
+                size
+            );
+
+          }
+        );
+
+      /*
+        This is important for our
+        cart later.
+
+        selectedVariant.id is now the
+        exact Printify variant chosen
+        by the customer.
+      */
+
+      console.log(
+        "VAULREN VARIANT SELECTED:",
+        {
+          colour: selectedColour,
+          size: selectedSize,
+          variantId:
+            selectedVariant.id
+        }
+      );
+    }
+
+
+    /* -------------------------
+       LOAD PRODUCT
+    ------------------------- */
 
     async function loadVaulrenProduct() {
 
       try {
 
         const response =
-          await fetch(VAULREN_API);
+          await fetch(
+            VAULREN_API
+          );
 
         if (!response.ok) {
+
           throw new Error(
             "Could not load VAULREN product."
           );
+
         }
 
         vaulrenProduct =
@@ -726,11 +1072,11 @@
 
         createColourButtons();
 
-        /*
-          Tan is the default VAULREN colour.
-        */
+        updateProductImage(
+          selectedColour
+        );
 
-        showColour("Tan");
+        createSizeButtons();
 
       } catch (error) {
 
@@ -742,7 +1088,9 @@
       }
     }
 
+
     loadVaulrenProduct();
+
   </script>
 
 </body>
