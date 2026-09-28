@@ -23,7 +23,7 @@
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    body.modal-open {
+    body.no-scroll {
       overflow: hidden;
     }
 
@@ -53,12 +53,19 @@
     }
 
     .nav-links a,
-    .cart {
+    .cart-button {
       color: #171714;
       text-decoration: none;
       font-size: 11px;
       letter-spacing: 1.8px;
       text-transform: uppercase;
+    }
+
+    .cart-button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-family: Arial, Helvetica, sans-serif;
     }
 
     .logo {
@@ -110,11 +117,11 @@
 
     .button {
       display: inline-block;
-      width: auto;
       background: #171714;
       color: #fff;
       padding: 16px 32px;
       text-decoration: none;
+      font-family: Arial, Helvetica, sans-serif;
       font-size: 10px;
       letter-spacing: 2.5px;
       text-transform: uppercase;
@@ -126,6 +133,11 @@
 
     .button:hover {
       background: #3b3934;
+    }
+
+    .button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
     }
 
     .statement {
@@ -232,8 +244,6 @@
       margin-bottom: 35px;
     }
 
-    /* SELECTORS */
-
     .selector {
       margin-bottom: 27px;
     }
@@ -308,21 +318,22 @@
       text-decoration: line-through;
     }
 
-    .coming-soon {
-      border-top: 1px solid rgba(0,0,0,0.15);
-      border-bottom: 1px solid rgba(0,0,0,0.15);
-      padding: 18px 0;
-      margin-bottom: 30px;
-      font-size: 10px;
-      letter-spacing: 2px;
+    .product-action {
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    .selection-message {
+      min-height: 17px;
+      margin-top: 13px;
+      text-align: center;
+      color: #615c53;
+      font-size: 9px;
+      letter-spacing: 1.3px;
       text-transform: uppercase;
     }
 
-    .product-action {
-      width: 100%;
-    }
-
-    /* SIZE GUIDE MODAL */
+    /* SIZE GUIDE */
 
     .size-guide-modal {
       position: fixed;
@@ -332,7 +343,7 @@
       align-items: center;
       justify-content: center;
       padding: 25px;
-      z-index: 9999;
+      z-index: 10000;
     }
 
     .size-guide-modal.open {
@@ -357,7 +368,6 @@
       background: transparent;
       color: #171714;
       font-size: 25px;
-      font-weight: 300;
       cursor: pointer;
       line-height: 1;
     }
@@ -468,6 +478,174 @@
       line-height: 1.7;
     }
 
+    /* CART */
+
+    .cart-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(23,23,20,0.45);
+      opacity: 0;
+      visibility: hidden;
+      transition: 0.25s;
+      z-index: 10990;
+    }
+
+    .cart-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(460px, 100%);
+      height: 100vh;
+      background: #f7f4ed;
+      z-index: 11000;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cart-drawer.open {
+      transform: translateX(0);
+    }
+
+    .cart-header {
+      min-height: 88px;
+      padding: 0 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .cart-header h2 {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 26px;
+      font-weight: normal;
+    }
+
+    .cart-close {
+      border: none;
+      background: none;
+      font-size: 26px;
+      cursor: pointer;
+      color: #171714;
+    }
+
+    .cart-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .empty-cart {
+      padding: 60px 0;
+      text-align: center;
+    }
+
+    .empty-cart-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .empty-cart p {
+      color: #625d55;
+      font-size: 11px;
+      line-height: 1.7;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 105px 1fr;
+      gap: 20px;
+      padding-bottom: 28px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid rgba(0,0,0,0.12);
+    }
+
+    .cart-item-image {
+      width: 105px;
+      height: 130px;
+      background: #ddd2c1;
+      object-fit: cover;
+    }
+
+    .cart-item-name {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 19px;
+      line-height: 1.25;
+      margin-bottom: 10px;
+    }
+
+    .cart-item-details {
+      color: #625d55;
+      font-size: 10px;
+      line-height: 1.8;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+    }
+
+    .quantity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      border: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .quantity-control button {
+      width: 32px;
+      height: 31px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .quantity-control span {
+      min-width: 30px;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .remove-item {
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 9px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    .cart-footer {
+      padding: 25px 28px 30px;
+      border-top: 1px solid rgba(0,0,0,0.12);
+      background: #f7f4ed;
+    }
+
+    .cart-note {
+      color: #625d55;
+      font-size: 10px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .checkout-placeholder {
+      width: 100%;
+    }
+
     /* PHILOSOPHY */
 
     .philosophy {
@@ -520,7 +698,6 @@
     }
 
     @media (max-width: 750px) {
-
       nav {
         height: 75px;
         padding: 0 20px;
@@ -535,7 +712,7 @@
         letter-spacing: 6px;
       }
 
-      .cart {
+      .cart-button {
         margin-left: auto;
       }
 
@@ -597,7 +774,6 @@
   </div>
 
   <nav>
-
     <div class="nav-links">
       <a href="#shop">Shop</a>
       <a href="#about">About</a>
@@ -607,14 +783,16 @@
       VAULREN
     </div>
 
-    <a class="cart" href="#">
-      Cart (0)
-    </a>
-
+    <button
+      class="cart-button"
+      id="open-cart"
+      type="button">
+      Cart (<span id="cart-count">0</span>)
+    </button>
   </nav>
 
-  <section class="hero">
 
+  <section class="hero">
     <div class="hero-content">
 
       <div class="eyebrow">
@@ -636,30 +814,22 @@
       </a>
 
     </div>
-
   </section>
 
-  <section class="statement">
 
+  <section class="statement">
     <p>
       Less noise. Better essentials.
       Designed for more.
     </p>
-
   </section>
+
 
   <section class="product-section" id="shop">
 
     <div class="section-top">
-
-      <h2>
-        Drop 001
-      </h2>
-
-      <span>
-        01 / Essential
-      </span>
-
+      <h2>Drop 001</h2>
+      <span>01 / Essential</span>
     </div>
 
     <div class="product">
@@ -701,22 +871,16 @@
           versatile piece designed for everyday wear.
         </p>
 
-        <!-- COLOUR -->
-
         <div class="selector">
 
           <div class="selector-label">
-
-            <span>
-              Colour
-            </span>
+            <span>Colour</span>
 
             <span
               class="selected-value"
               id="selected-colour">
               Tan
             </span>
-
           </div>
 
           <div
@@ -726,15 +890,12 @@
 
         </div>
 
-        <!-- SIZE -->
 
         <div class="selector">
 
           <div class="selector-label">
 
-            <span>
-              Size
-            </span>
+            <span>Size</span>
 
             <div class="selector-label-right">
 
@@ -762,21 +923,25 @@
 
         </div>
 
-        <div class="coming-soon">
-          Drop 001 — Coming Soon
-        </div>
-
         <button
           class="button product-action"
+          id="add-to-cart"
           type="button">
-          Coming Soon
+          Add to Cart
         </button>
+
+        <div
+          class="selection-message"
+          id="selection-message">
+          Select a size
+        </div>
 
       </div>
 
     </div>
 
   </section>
+
 
   <section
     class="philosophy"
@@ -807,6 +972,7 @@
     </div>
 
   </section>
+
 
   <footer>
 
@@ -903,52 +1069,24 @@
 
             <tr>
               <td>Body Length</td>
-
-              <td class="measurement"
-                  data-in="27.75"></td>
-
-              <td class="measurement"
-                  data-in="28.75"></td>
-
-              <td class="measurement"
-                  data-in="29.75"></td>
-
-              <td class="measurement"
-                  data-in="30.75"></td>
-
-              <td class="measurement"
-                  data-in="31.75"></td>
-
-              <td class="measurement"
-                  data-in="32.75"></td>
-
-              <td class="measurement"
-                  data-in="33.75"></td>
+              <td class="measurement" data-in="27.75"></td>
+              <td class="measurement" data-in="28.75"></td>
+              <td class="measurement" data-in="29.75"></td>
+              <td class="measurement" data-in="30.75"></td>
+              <td class="measurement" data-in="31.75"></td>
+              <td class="measurement" data-in="32.75"></td>
+              <td class="measurement" data-in="33.75"></td>
             </tr>
 
             <tr>
               <td>Chest Width</td>
-
-              <td class="measurement"
-                  data-in="19.50"></td>
-
-              <td class="measurement"
-                  data-in="21.00"></td>
-
-              <td class="measurement"
-                  data-in="22.50"></td>
-
-              <td class="measurement"
-                  data-in="24.00"></td>
-
-              <td class="measurement"
-                  data-in="26.00"></td>
-
-              <td class="measurement"
-                  data-in="28.00"></td>
-
-              <td class="measurement"
-                  data-in="30.00"></td>
+              <td class="measurement" data-in="19.50"></td>
+              <td class="measurement" data-in="21.00"></td>
+              <td class="measurement" data-in="22.50"></td>
+              <td class="measurement" data-in="24.00"></td>
+              <td class="measurement" data-in="26.00"></td>
+              <td class="measurement" data-in="28.00"></td>
+              <td class="measurement" data-in="30.00"></td>
             </tr>
 
           </tbody>
@@ -960,30 +1098,22 @@
       <div class="measurement-guide">
 
         <div>
-
-          <h3>
-            Body Length
-          </h3>
+          <h3>Body Length</h3>
 
           <p>
             Measure from the highest point of the shoulder down
             to the bottom hem of the garment.
           </p>
-
         </div>
 
         <div>
-
-          <h3>
-            Chest Width
-          </h3>
+          <h3>Chest Width</h3>
 
           <p>
             Lay the garment flat and measure straight across the
             chest from side to side. This is a laid-flat width,
             not the full chest circumference.
           </p>
-
         </div>
 
       </div>
@@ -998,10 +1128,68 @@
   </div>
 
 
+  <!-- CART OVERLAY -->
+
+  <div
+    class="cart-overlay"
+    id="cart-overlay">
+  </div>
+
+
+  <!-- CART DRAWER -->
+
+  <aside
+    class="cart-drawer"
+    id="cart-drawer"
+    aria-hidden="true">
+
+    <div class="cart-header">
+
+      <h2>
+        Your Cart
+      </h2>
+
+      <button
+        class="cart-close"
+        id="close-cart"
+        type="button"
+        aria-label="Close cart">
+        ×
+      </button>
+
+    </div>
+
+    <div
+      class="cart-content"
+      id="cart-content">
+    </div>
+
+    <div class="cart-footer">
+
+      <p class="cart-note">
+        Final pricing and checkout will be available before
+        Drop 001 launches.
+      </p>
+
+      <button
+        class="button checkout-placeholder"
+        type="button"
+        disabled>
+        Checkout Coming Soon
+      </button>
+
+    </div>
+
+  </aside>
+
+
   <script>
 
     const VAULREN_API =
       "https://vaulren-api.jaiguptasydney.workers.dev/";
+
+    const VAULREN_PRODUCT_ID =
+      "6ab9ed529237deb945086922";
 
     const VAULREN_COLOURS = [
       "Tan",
@@ -1020,14 +1208,21 @@
       "3XL"
     ];
 
+    const CART_STORAGE_KEY =
+      "vaulren_cart_v1";
+
     let vaulrenProduct = null;
 
     let selectedColour = "Tan";
     let selectedSize = null;
     let selectedVariant = null;
 
+    let cart = loadCart();
 
-    /* VARIANTS */
+
+    /* ------------------------------
+       VARIANTS
+    ------------------------------ */
 
     function splitVariantTitle(title) {
 
@@ -1048,6 +1243,10 @@
       size,
       enabledOnly = true
     ) {
+
+      if (!vaulrenProduct) {
+        return null;
+      }
 
       return vaulrenProduct.variants.find(
         variant => {
@@ -1079,6 +1278,10 @@
       colour
     ) {
 
+      if (!vaulrenProduct) {
+        return [];
+      }
+
       return vaulrenProduct.variants.filter(
         variant => {
 
@@ -1096,7 +1299,9 @@
     }
 
 
-    /* PRODUCT IMAGE */
+    /* ------------------------------
+       PRODUCT IMAGE
+    ------------------------------ */
 
     function getFrontImageForColour(
       colour
@@ -1120,16 +1325,25 @@
         vaulrenProduct.images.find(
           image => {
 
+            const src =
+              image.src || "";
+
+            const mockupId =
+              image.mockup_id || "";
+
             const isFront =
-              image.src.includes(
+              src.includes(
                 "camera_label=front"
               ) ||
-              image.mockup_id.endsWith(
+              mockupId.endsWith(
                 "_front"
               );
 
+            const imageVariantIds =
+              image.variant_ids || [];
+
             const correctColour =
-              image.variant_ids.some(
+              imageVariantIds.some(
                 id =>
                   variantIds.includes(id)
               );
@@ -1142,6 +1356,21 @@
         );
 
       return frontImage || null;
+    }
+
+
+    function getImageUrlForColour(
+      colour
+    ) {
+
+      const image =
+        getFrontImageForColour(
+          colour
+        );
+
+      return image
+        ? image.src
+        : "";
     }
 
 
@@ -1189,7 +1418,9 @@
     }
 
 
-    /* COLOURS */
+    /* ------------------------------
+       COLOURS
+    ------------------------------ */
 
     function createColourButtons() {
 
@@ -1279,6 +1510,11 @@
       ).textContent =
         "Select";
 
+      document.getElementById(
+        "selection-message"
+      ).textContent =
+        "Select a size";
+
       document
         .querySelectorAll(
           "#colour-options .option-button"
@@ -1303,7 +1539,9 @@
     }
 
 
-    /* SIZES */
+    /* ------------------------------
+       SIZES
+    ------------------------------ */
 
     function createSizeButtons() {
 
@@ -1394,6 +1632,11 @@
       ).textContent =
         size;
 
+      document.getElementById(
+        "selection-message"
+      ).textContent =
+        `${selectedColour} / ${size}`;
+
       document
         .querySelectorAll(
           "#size-options .option-button"
@@ -1413,8 +1656,12 @@
       console.log(
         "VAULREN VARIANT SELECTED:",
         {
-          colour: selectedColour,
-          size: selectedSize,
+          colour:
+            selectedColour,
+
+          size:
+            selectedSize,
+
           variantId:
             selectedVariant.id
         }
@@ -1422,7 +1669,549 @@
     }
 
 
-    /* SIZE GUIDE */
+    /* ------------------------------
+       CART STORAGE
+    ------------------------------ */
+
+    function loadCart() {
+
+      try {
+
+        const storedCart =
+          localStorage.getItem(
+            CART_STORAGE_KEY
+          );
+
+        if (!storedCart) {
+          return [];
+        }
+
+        const parsedCart =
+          JSON.parse(
+            storedCart
+          );
+
+        return Array.isArray(
+          parsedCart
+        )
+          ? parsedCart
+          : [];
+
+      } catch (error) {
+
+        console.error(
+          "Could not load cart:",
+          error
+        );
+
+        return [];
+      }
+    }
+
+
+    function saveCart() {
+
+      localStorage.setItem(
+        CART_STORAGE_KEY,
+        JSON.stringify(cart)
+      );
+
+      updateCartCount();
+      renderCart();
+    }
+
+
+    function getCartQuantity() {
+
+      return cart.reduce(
+        (total, item) =>
+          total + item.quantity,
+        0
+      );
+    }
+
+
+    function updateCartCount() {
+
+      document.getElementById(
+        "cart-count"
+      ).textContent =
+        getCartQuantity();
+    }
+
+
+    /* ------------------------------
+       ADD TO CART
+    ------------------------------ */
+
+    function addSelectedProductToCart() {
+
+      const message =
+        document.getElementById(
+          "selection-message"
+        );
+
+      if (!selectedVariant) {
+
+        message.textContent =
+          "Please select a size";
+
+        return;
+      }
+
+      const variantId =
+        selectedVariant.id;
+
+      const existingItem =
+        cart.find(
+          item =>
+            String(item.variantId) ===
+            String(variantId)
+        );
+
+      if (existingItem) {
+
+        existingItem.quantity += 1;
+
+      } else {
+
+        cart.push({
+          productId:
+            VAULREN_PRODUCT_ID,
+
+          variantId:
+            variantId,
+
+          name:
+            "Essential Oversized Tee",
+
+          colour:
+            selectedColour,
+
+          size:
+            selectedSize,
+
+          quantity:
+            1,
+
+          image:
+            getImageUrlForColour(
+              selectedColour
+            )
+        });
+      }
+
+      saveCart();
+
+      message.textContent =
+        "Added to cart";
+
+      openCartDrawer();
+    }
+
+
+    document.getElementById(
+      "add-to-cart"
+    ).addEventListener(
+      "click",
+      addSelectedProductToCart
+    );
+
+
+    /* ------------------------------
+       CART CONTROLS
+    ------------------------------ */
+
+    const cartDrawer =
+      document.getElementById(
+        "cart-drawer"
+      );
+
+    const cartOverlay =
+      document.getElementById(
+        "cart-overlay"
+      );
+
+
+    function openCartDrawer() {
+
+      cartDrawer.classList.add(
+        "open"
+      );
+
+      cartOverlay.classList.add(
+        "open"
+      );
+
+      cartDrawer.setAttribute(
+        "aria-hidden",
+        "false"
+      );
+
+      document.body.classList.add(
+        "no-scroll"
+      );
+    }
+
+
+    function closeCartDrawer() {
+
+      cartDrawer.classList.remove(
+        "open"
+      );
+
+      cartOverlay.classList.remove(
+        "open"
+      );
+
+      cartDrawer.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+      document.body.classList.remove(
+        "no-scroll"
+      );
+    }
+
+
+    document.getElementById(
+      "open-cart"
+    ).addEventListener(
+      "click",
+      openCartDrawer
+    );
+
+
+    document.getElementById(
+      "close-cart"
+    ).addEventListener(
+      "click",
+      closeCartDrawer
+    );
+
+
+    cartOverlay.addEventListener(
+      "click",
+      closeCartDrawer
+    );
+
+
+    /* ------------------------------
+       CART ITEMS
+    ------------------------------ */
+
+    function changeQuantity(
+      variantId,
+      amount
+    ) {
+
+      const item =
+        cart.find(
+          cartItem =>
+            String(
+              cartItem.variantId
+            ) ===
+            String(
+              variantId
+            )
+        );
+
+      if (!item) {
+        return;
+      }
+
+      item.quantity += amount;
+
+      if (item.quantity <= 0) {
+
+        cart =
+          cart.filter(
+            cartItem =>
+              String(
+                cartItem.variantId
+              ) !==
+              String(
+                variantId
+              )
+          );
+      }
+
+      saveCart();
+    }
+
+
+    function removeCartItem(
+      variantId
+    ) {
+
+      cart =
+        cart.filter(
+          item =>
+            String(
+              item.variantId
+            ) !==
+            String(
+              variantId
+            )
+        );
+
+      saveCart();
+    }
+
+
+    function renderCart() {
+
+      const container =
+        document.getElementById(
+          "cart-content"
+        );
+
+      container.innerHTML = "";
+
+      if (!cart.length) {
+
+        container.innerHTML = `
+          <div class="empty-cart">
+            <div class="empty-cart-title">
+              Your cart is empty.
+            </div>
+
+            <p>
+              Select your colour and size
+              from Drop 001 to get started.
+            </p>
+          </div>
+        `;
+
+        return;
+      }
+
+
+      cart.forEach(
+        item => {
+
+          const cartItem =
+            document.createElement(
+              "div"
+            );
+
+          cartItem.className =
+            "cart-item";
+
+
+          const image =
+            document.createElement(
+              "img"
+            );
+
+          image.className =
+            "cart-item-image";
+
+          image.src =
+            item.image || "";
+
+          image.alt =
+            `VAULREN ${item.name} ${item.colour}`;
+
+
+          const details =
+            document.createElement(
+              "div"
+            );
+
+
+          const name =
+            document.createElement(
+              "div"
+            );
+
+          name.className =
+            "cart-item-name";
+
+          name.textContent =
+            item.name;
+
+
+          const variantDetails =
+            document.createElement(
+              "div"
+            );
+
+          variantDetails.className =
+            "cart-item-details";
+
+          variantDetails.textContent =
+            `${item.colour} / ${item.size}`;
+
+
+          const quantityRow =
+            document.createElement(
+              "div"
+            );
+
+          quantityRow.className =
+            "quantity-row";
+
+
+          const quantityControl =
+            document.createElement(
+              "div"
+            );
+
+          quantityControl.className =
+            "quantity-control";
+
+
+          const minus =
+            document.createElement(
+              "button"
+            );
+
+          minus.type =
+            "button";
+
+          minus.textContent =
+            "−";
+
+          minus.setAttribute(
+            "aria-label",
+            "Decrease quantity"
+          );
+
+          minus.addEventListener(
+            "click",
+            function () {
+
+              changeQuantity(
+                item.variantId,
+                -1
+              );
+
+            }
+          );
+
+
+          const quantity =
+            document.createElement(
+              "span"
+            );
+
+          quantity.textContent =
+            item.quantity;
+
+
+          const plus =
+            document.createElement(
+              "button"
+            );
+
+          plus.type =
+            "button";
+
+          plus.textContent =
+            "+";
+
+          plus.setAttribute(
+            "aria-label",
+            "Increase quantity"
+          );
+
+          plus.addEventListener(
+            "click",
+            function () {
+
+              changeQuantity(
+                item.variantId,
+                1
+              );
+
+            }
+          );
+
+
+          quantityControl.appendChild(
+            minus
+          );
+
+          quantityControl.appendChild(
+            quantity
+          );
+
+          quantityControl.appendChild(
+            plus
+          );
+
+
+          const remove =
+            document.createElement(
+              "button"
+            );
+
+          remove.type =
+            "button";
+
+          remove.className =
+            "remove-item";
+
+          remove.textContent =
+            "Remove";
+
+          remove.addEventListener(
+            "click",
+            function () {
+
+              removeCartItem(
+                item.variantId
+              );
+
+            }
+          );
+
+
+          quantityRow.appendChild(
+            quantityControl
+          );
+
+          quantityRow.appendChild(
+            remove
+          );
+
+
+          details.appendChild(
+            name
+          );
+
+          details.appendChild(
+            variantDetails
+          );
+
+          details.appendChild(
+            quantityRow
+          );
+
+
+          cartItem.appendChild(
+            image
+          );
+
+          cartItem.appendChild(
+            details
+          );
+
+
+          container.appendChild(
+            cartItem
+          );
+
+        }
+      );
+    }
+
+
+    /* ------------------------------
+       SIZE GUIDE
+    ------------------------------ */
 
     const sizeGuideModal =
       document.getElementById(
@@ -1452,7 +2241,7 @@
       );
 
       document.body.classList.add(
-        "modal-open"
+        "no-scroll"
       );
     }
 
@@ -1469,7 +2258,7 @@
       );
 
       document.body.classList.remove(
-        "modal-open"
+        "no-scroll"
       );
     }
 
@@ -1506,19 +2295,34 @@
       function (event) {
 
         if (
-          event.key === "Escape" &&
-          sizeGuideModal.classList.contains(
-            "open"
-          )
+          event.key ===
+          "Escape"
         ) {
-          closeGuide();
+
+          if (
+            sizeGuideModal.classList.contains(
+              "open"
+            )
+          ) {
+            closeGuide();
+          }
+
+          if (
+            cartDrawer.classList.contains(
+              "open"
+            )
+          ) {
+            closeCartDrawer();
+          }
         }
 
       }
     );
 
 
-    /* CM / IN */
+    /* ------------------------------
+       CM / IN
+    ------------------------------ */
 
     const cmButton =
       document.getElementById(
@@ -1605,17 +2409,14 @@
     );
 
 
-    /*
-      Australia-facing default:
-      centimetres.
-    */
-
     showMeasurements(
       "cm"
     );
 
 
-    /* LOAD PRODUCT */
+    /* ------------------------------
+       LOAD PRODUCT
+    ------------------------------ */
 
     async function loadVaulrenProduct() {
 
@@ -1631,7 +2432,6 @@
           throw new Error(
             "Could not load VAULREN product."
           );
-
         }
 
         vaulrenProduct =
@@ -1657,10 +2457,20 @@
           error
         );
 
+        document.getElementById(
+          "selection-message"
+        ).textContent =
+          "Product temporarily unavailable";
       }
     }
 
 
+    /* ------------------------------
+       INITIALISE
+    ------------------------------ */
+
+    updateCartCount();
+    renderCart();
     loadVaulrenProduct();
 
   </script>
