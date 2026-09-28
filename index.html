@@ -463,6 +463,27 @@
     </div>
 
   </footer>
+<script>
+  const VAULREN_API = "https://vaulren-api.jaiguptasydney.workers.dev/";
 
+  async function loadVaulrenProduct() {
+    try {
+      const response = await fetch(VAULREN_API);
+
+      if (!response.ok) {
+        throw new Error("Could not load VAULREN product.");
+      }
+
+      const product = await response.json();
+
+      console.log("VAULREN PRODUCT CONNECTED:", product);
+    } catch (error) {
+      console.error("VAULREN API ERROR:", error);
+    }
+  }
+
+  loadVaulrenProduct();
+</script>
+  
 </body>
 </html>
