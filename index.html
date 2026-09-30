@@ -883,7 +883,7 @@
         </h3>
 
         <div class="price" id="product-price">
-          Loading price...
+          A$54.95 AUD
         </div>
 
         <p class="description">
@@ -1193,7 +1193,7 @@
       </div>
 
       <p class="cart-note">
-        Prices shown in USD. Shipping and checkout will be available
+        Prices shown in AUD. Shipping and checkout will be available
         before Drop 001 launches.
       </p>
 
@@ -1236,6 +1236,9 @@
 
     const CART_STORAGE_KEY =
       "vaulren_cart_v1";
+
+    const VAULREN_RETAIL_PRICE_CENTS =
+      5495;
 
     let vaulrenProduct = null;
 
@@ -1329,37 +1332,14 @@
        PRICING
     ------------------------------ */
 
-    function getVariantPriceCents(variant) {
-      const price = Number(variant && variant.price);
-      return Number.isFinite(price) ? price : null;
-    }
-
-    function formatUSD(cents) {
+    function formatAUD(cents) {
       const amount = Number(cents);
+
       if (!Number.isFinite(amount)) {
         return "Price unavailable";
       }
 
-      return "US$" + (amount / 100).toFixed(2);
-    }
-
-    function getEnabledStoreVariants() {
-      if (!vaulrenProduct) {
-        return [];
-      }
-
-      return vaulrenProduct.variants.filter(
-        variant => {
-          const details = splitVariantTitle(variant.title);
-
-          return (
-            VAULREN_COLOURS.includes(details.colour) &&
-            VAULREN_SIZES.includes(details.size) &&
-            variant.is_enabled === true &&
-            getVariantPriceCents(variant) !== null
-          );
-        }
-      );
+      return "A$" + (amount / 100).toFixed(2);
     }
 
     function updateDisplayedPrice() {
@@ -1370,40 +1350,14 @@
         return;
       }
 
-      if (selectedVariant) {
-        const exactPrice =
-          getVariantPriceCents(selectedVariant);
-
-        priceElement.textContent =
-          exactPrice === null
-            ? "Price unavailable"
-            : formatUSD(exactPrice);
-
-        return;
-      }
-
-      const prices =
-        getEnabledStoreVariants()
-          .map(getVariantPriceCents)
-          .filter(price => price !== null);
-
-      if (!prices.length) {
-        priceElement.textContent =
-          "Price unavailable";
-        return;
-      }
-
-      const minimum = Math.min(...prices);
-      const maximum = Math.max(...prices);
-
       priceElement.textContent =
-        minimum === maximum
-          ? formatUSD(minimum)
-          : `From ${formatUSD(minimum)}`;
+        formatAUD(VAULREN_RETAIL_PRICE_CENTS) +
+        " AUD";
     }
 
     function syncCartPricesFromProduct() {
-      if (!vaulrenProduct || !cart.length) {
+      if (!cart.length) {
+        renderCart();
         return;
       }
 
@@ -1411,27 +1365,13 @@
 
       cart.forEach(item => {
         if (
-          String(item.productId) !==
-          String(VAULREN_PRODUCT_ID)
+          String(item.productId) ===
+          String(VAULREN_PRODUCT_ID) &&
+          item.priceCents !==
+          VAULREN_RETAIL_PRICE_CENTS
         ) {
-          return;
-        }
-
-        const variant =
-          vaulrenProduct.variants.find(
-            productVariant =>
-              String(productVariant.id) ===
-              String(item.variantId)
-          );
-
-        const livePrice =
-          getVariantPriceCents(variant);
-
-        if (
-          livePrice !== null &&
-          item.priceCents !== livePrice
-        ) {
-          item.priceCents = livePrice;
+          item.priceCents =
+            VAULREN_RETAIL_PRICE_CENTS;
           changed = true;
         }
       });
@@ -1918,13 +1858,7 @@
         );
 
       const selectedPriceCents =
-        getVariantPriceCents(selectedVariant);
-
-      if (selectedPriceCents === null) {
-        message.textContent =
-          "Price temporarily unavailable";
-        return;
-      }
+        VAULREN_RETAIL_PRICE_CENTS;
 
       if (existingItem) {
 
@@ -2154,7 +2088,7 @@
 
       if (subtotalElement) {
         subtotalElement.textContent =
-          formatUSD(subtotalCents);
+          formatAUD(subtotalCents);
       }
 
       if (!cart.length) {
@@ -2245,7 +2179,7 @@
             Number.isFinite(
               Number(item.priceCents)
             )
-              ? formatUSD(
+              ? formatAUD(
                   Number(item.priceCents) *
                   item.quantity
                 )
