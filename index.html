@@ -2785,20 +2785,46 @@
       const raw =
         data && data.options;
 
+      if (!raw) {
+        return [];
+      }
+
       if (Array.isArray(raw)) {
         return raw;
       }
 
-      if (raw && Array.isArray(raw.shipping)) {
-        return raw.shipping;
-      }
+      if (typeof raw === "object") {
+        const labels = {
+          standard: "Standard",
+          economy: "Economy",
+          priority: "Priority",
+          express: "Express",
+          printify_express: "Printify Express"
+        };
 
-      if (raw && Array.isArray(raw.options)) {
-        return raw.options;
-      }
+        return Object.entries(raw)
+          .filter(([method, price]) =>
+            Number.isFinite(Number(price)) &&
+            Number(price) >= 0
+          )
+          .map(([method, price]) => ({
+            name:
+              labels[method] ||
+              method
+                .replaceAll("_", " ")
+                .replace(/\\b\\w/g, letter =>
+                  letter.toUpperCase()
+                ),
 
-      if (raw && Array.isArray(raw.rates)) {
-        return raw.rates;
+            price:
+              Number(price),
+
+            currency:
+              data.currency || "USD",
+
+            method:
+              method
+          }));
       }
 
       return [];
