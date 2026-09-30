@@ -667,6 +667,20 @@
       width: 100%;
     }
 
+    /* SHIPPING CALCULATOR */
+    .shipping-calculator { margin-top:18px; padding-top:18px; border-top:1px solid rgba(0,0,0,.12); }
+    .shipping-calculator h3 { font-family:Georgia,"Times New Roman",serif; font-size:20px; font-weight:normal; margin-bottom:7px; }
+    .shipping-intro,.shipping-status,.shipping-currency-note { color:#625d55; font-size:10px; line-height:1.6; margin-bottom:12px; }
+    .shipping-grid { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .shipping-field { width:100%; border:1px solid rgba(0,0,0,.2); background:transparent; color:#171714; padding:12px 11px; font:11px Arial,Helvetica,sans-serif; outline:none; }
+    .shipping-field:focus { border-color:#171714; }
+    .shipping-field.full { grid-column:1/-1; }
+    .shipping-button { width:100%; margin-top:10px; }
+    .shipping-status { min-height:16px; margin-top:11px; }
+    .shipping-option { display:flex; justify-content:space-between; gap:16px; padding:11px 0; border-top:1px solid rgba(0,0,0,.1); font-size:11px; }
+    .shipping-option strong { font-weight:normal; }
+    .shipping-currency-note { margin-top:8px; font-size:9px; }
+
     /* PHILOSOPHY */
 
     .philosophy {
@@ -1189,13 +1203,28 @@
 
       <div class="cart-subtotal">
         <span>Subtotal</span>
-        <strong id="cart-subtotal">US$0.00</strong>
+        <strong id="cart-subtotal">A$0.00</strong>
       </div>
 
-      <p class="cart-note">
-        Prices shown in AUD. Shipping and checkout will be available
-        before Drop 001 launches.
-      </p>
+      <div class="shipping-calculator" id="shipping-calculator">
+        <h3>Calculate Shipping</h3>
+        <p class="shipping-intro">Australia only for Drop 001. Enter a delivery address for a live fulfilment shipping quote.</p>
+        <div class="shipping-grid">
+          <input class="shipping-field" id="ship-first-name" type="text" autocomplete="given-name" placeholder="First name">
+          <input class="shipping-field" id="ship-last-name" type="text" autocomplete="family-name" placeholder="Last name">
+          <input class="shipping-field full" id="ship-email" type="email" autocomplete="email" placeholder="Email">
+          <input class="shipping-field full" id="ship-phone" type="tel" autocomplete="tel" placeholder="Mobile (optional if email provided)">
+          <input class="shipping-field full" id="ship-address1" type="text" autocomplete="address-line1" placeholder="Street address">
+          <input class="shipping-field full" id="ship-address2" type="text" autocomplete="address-line2" placeholder="Apartment / unit (optional)">
+          <input class="shipping-field" id="ship-city" type="text" autocomplete="address-level2" placeholder="Suburb / city">
+          <select class="shipping-field" id="ship-region" autocomplete="address-level1"><option value="">State / territory</option><option>ACT</option><option>NSW</option><option>NT</option><option>QLD</option><option>SA</option><option>TAS</option><option>VIC</option><option>WA</option></select>
+          <input class="shipping-field full" id="ship-postcode" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="4" placeholder="Postcode">
+        </div>
+        <button class="button shipping-button" id="calculate-shipping" type="button">Calculate Shipping</button>
+        <div class="shipping-status" id="shipping-status"></div>
+        <div id="shipping-options"></div>
+      </div>
+      <p class="cart-note">Product prices are shown in AUD. Live fulfilment shipping quotes may be returned in USD during setup.</p>
 
       <button
         class="button checkout-placeholder"
@@ -1213,6 +1242,9 @@
 
     const VAULREN_API =
       "https://vaulren-api.jaiguptasydney.workers.dev/";
+
+    const VAULREN_SHIPPING_API =
+      "https://vaulren-api.jaiguptasydney.workers.dev/shipping";
 
     const VAULREN_PRODUCT_ID =
       "6ab9ed529237deb945086922";
@@ -1806,6 +1838,7 @@
 
       updateCartCount();
       renderCart();
+      resetShippingQuote();
     }
 
 
@@ -2353,6 +2386,59 @@
       );
     }
 
+
+    /* ------------------------------
+       SHIPPING
+    ------------------------------ */
+    function resetShippingQuote() {
+      const s=document.getElementById("shipping-status"), o=document.getElementById("shipping-options");
+      if(s) s.textContent=""; if(o) o.innerHTML="";
+    }
+
+    function normaliseShippingOptions(data) {
+      const raw=data && data.options;
+      if(Array.isArray(raw)) return raw;
+      if(raw && Array.isArray(raw.shipping)) return raw.shipping;
+      if(raw && Array.isArray(raw.options)) return raw.options;
+      if(raw && Array.isArray(raw.rates)) return raw.rates;
+      return [];
+    }
+
+    function shippingPriceText(option,currency) {
+      const n=Number(option.price ?? option.rate ?? option.cost);
+      if(!Number.isFinite(n)) return "Price unavailable";
+      const c=option.currency || currency || "USD", a=(n/100).toFixed(2);
+      return c==="USD" ? `US$${a}` : c==="AUD" ? `A$${a}` : `${c} ${a}`;
+    }
+
+    async function calculateShipping() {
+      const status=document.getElementById("shipping-status"), box=document.getElementById("shipping-options"), button=document.getElementById("calculate-shipping");
+      resetShippingQuote();
+      if(!cart.length){ status.textContent="Add an item to your cart first."; return; }
+      const address={
+        first_name:document.getElementById("ship-first-name").value.trim(), last_name:document.getElementById("ship-last-name").value.trim(),
+        email:document.getElementById("ship-email").value.trim(), phone:document.getElementById("ship-phone").value.trim(),
+        address1:document.getElementById("ship-address1").value.trim(), address2:document.getElementById("ship-address2").value.trim(),
+        city:document.getElementById("ship-city").value.trim(), region:document.getElementById("ship-region").value,
+        zip:document.getElementById("ship-postcode").value.trim(), country:"AU"
+      };
+      if([address.first_name,address.last_name,address.address1,address.city,address.region,address.zip].some(v=>!v)){ status.textContent="Please complete your name and Australian delivery address."; return; }
+      if(!/^\d{4}$/.test(address.zip)){ status.textContent="Enter a valid 4-digit Australian postcode."; return; }
+      if(!address.email && !address.phone){ status.textContent="Enter an email address or mobile number."; return; }
+      button.disabled=true; button.textContent="Calculating..."; status.textContent="Requesting live shipping options...";
+      try {
+        const response=await fetch(VAULREN_SHIPPING_API,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({address,items:cart.map(i=>({variantId:Number(i.variantId),quantity:Number(i.quantity)}))})});
+        const data=await response.json();
+        if(!response.ok) throw new Error(data.error || "Could not calculate shipping.");
+        const options=normaliseShippingOptions(data);
+        if(!options.length){ status.textContent="No shipping options were returned for this address."; return; }
+        status.textContent="Live shipping options:";
+        options.forEach((option,index)=>{ const row=document.createElement("div"), title=document.createElement("span"), price=document.createElement("strong"); row.className="shipping-option"; title.textContent=option.title||option.name||option.label||`Shipping option ${index+1}`; price.textContent=shippingPriceText(option,data.currency); row.append(title,price); box.appendChild(row); });
+        const note=document.createElement("div"); note.className="shipping-currency-note"; note.textContent="This is the fulfilment provider's live quote. During setup it may be returned in USD; customer-facing AUD shipping will be finalised before checkout goes live."; box.appendChild(note);
+      } catch(error) { console.error("VAULREN SHIPPING ERROR:",error); status.textContent=error.message||"Shipping is temporarily unavailable."; }
+      finally { button.disabled=false; button.textContent="Calculate Shipping"; }
+    }
+    document.getElementById("calculate-shipping").addEventListener("click",calculateShipping);
 
     /* ------------------------------
        SIZE GUIDE
