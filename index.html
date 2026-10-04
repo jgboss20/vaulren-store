@@ -241,7 +241,32 @@
       color: #555047;
       font-size: 13px;
       line-height: 1.8;
-      margin-bottom: 35px;
+      margin-bottom: 24px;
+    }
+
+    .product-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid rgba(23, 23, 20, 0.18);
+      border-bottom: 1px solid rgba(23, 23, 20, 0.18);
+      margin-bottom: 32px;
+    }
+
+    .product-spec {
+      padding: 12px 0;
+      font-size: 10px;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+    }
+
+    .product-spec:nth-child(odd) {
+      padding-right: 12px;
+    }
+
+    .product-spec:nth-child(even) {
+      padding-left: 12px;
+      border-left: 1px solid rgba(23, 23, 20, 0.18);
     }
 
     .selector {
@@ -1068,10 +1093,17 @@
         </div>
 
         <p class="description">
-          A heavyweight oversized essential with a structured, relaxed silhouette.
-          Finished with understated VAULREN branding and designed for
-          everyday wear.
+          A heavyweight everyday essential built around refined simplicity.
+          Cut in a boxy oversized silhouette with dropped shoulders and finished with
+          understated VAULREN branding.
         </p>
+
+        <div class="product-specs" aria-label="Product details">
+          <div class="product-spec">280 GSM heavyweight</div>
+          <div class="product-spec">100% carded cotton</div>
+          <div class="product-spec">Boxy oversized fit</div>
+          <div class="product-spec">Dropped shoulders</div>
+        </div>
 
         <div class="selector">
 
@@ -1371,7 +1403,7 @@
       </div>
 
       <p class="cart-note">
-        Prices shown in AUD. Shipping is calculated at checkout.
+        Prices shown in AUD. Australian shipping is calculated at checkout.
       </p>
 
       <button
@@ -1480,9 +1512,15 @@
     const VAULREN_PRODUCT_ID =
       "6ac1aecba38cd9c66504b94a";
 
-    // Customer-facing shipping is displayed in AUD.
-    // Printify currently returns this shop's shipping quote in USD.
-    const VAULREN_USD_TO_AUD = 1.44395;
+    // Customer-facing Australian shipping rates.
+    // Printify is still queried so only currently available methods are shown.
+    const VAULREN_SHIPPING_RATES_AUD_CENTS = {
+      standard: 1095,
+      economy: 1095,
+      express: 1895,
+      priority: 1895,
+      printify_express: 1895
+    };
 
     const VAULREN_COLOURS = [
       "White",
@@ -2839,37 +2877,26 @@
 
 
     function shippingPriceText(option, currency) {
-      const cents =
-        Number(
-          option.price ??
-          option.rate ??
-          option.cost
-        );
-
-      if (!Number.isFinite(cents)) {
-        return "Price unavailable";
-      }
-
-      const code =
+      const method =
         String(
-          option.currency ||
-          currency ||
-          "USD"
-        ).toUpperCase();
+          option.method ||
+          option.name ||
+          option.title ||
+          ""
+        )
+          .toLowerCase()
+          .replaceAll(" ", "_");
 
-      if (code === "USD") {
-        const audAmount =
-          (cents / 100) *
-          VAULREN_USD_TO_AUD;
+      const fixedAudCents =
+        VAULREN_SHIPPING_RATES_AUD_CENTS[
+          method
+        ];
 
-        return `A$${audAmount.toFixed(2)} AUD`;
+      if (Number.isFinite(fixedAudCents)) {
+        return `A$${(fixedAudCents / 100).toFixed(2)} AUD`;
       }
 
-      if (code === "AUD") {
-        return `A$${(cents / 100).toFixed(2)} AUD`;
-      }
-
-      return `${code} ${(cents / 100).toFixed(2)}`;
+      return "Calculated at payment";
     }
 
 
