@@ -1047,7 +1047,7 @@
         <img
           id="product-image"
           src=""
-          alt="VAULREN Essential Oversized Tee"
+          alt="VAULREN Heavy Oversized Tee"
           style="display:none;"
         >
 
@@ -1060,7 +1060,7 @@
         </div>
 
         <h3>
-          Essential Oversized Tee
+          Heavy Oversized Tee
         </h3>
 
         <div class="price" id="product-price">
@@ -1068,9 +1068,9 @@
         </div>
 
         <p class="description">
-          A relaxed oversized essential built around refined simplicity.
-          Clean proportions and understated VAULREN branding create a
-          versatile piece designed for everyday wear.
+          A heavyweight oversized essential with a structured, relaxed silhouette.
+          Finished with understated VAULREN branding and designed for
+          everyday wear.
         </p>
 
         <div class="selector">
@@ -1081,7 +1081,7 @@
             <span
               class="selected-value"
               id="selected-colour">
-              Tan
+              White
             </span>
           </div>
 
@@ -1223,7 +1223,7 @@
       </div>
 
       <h2 id="size-guide-title">
-        Essential Oversized Tee
+        Heavy Oversized Tee
       </h2>
 
       <p class="size-guide-intro">
@@ -1257,7 +1257,6 @@
           <thead>
             <tr>
               <th>Measurement</th>
-              <th>XS</th>
               <th>S</th>
               <th>M</th>
               <th>L</th>
@@ -1271,24 +1270,22 @@
 
             <tr>
               <td>Body Length</td>
-              <td class="measurement" data-in="27.75"></td>
-              <td class="measurement" data-in="28.75"></td>
-              <td class="measurement" data-in="29.75"></td>
-              <td class="measurement" data-in="30.75"></td>
-              <td class="measurement" data-in="31.75"></td>
-              <td class="measurement" data-in="32.75"></td>
-              <td class="measurement" data-in="33.75"></td>
+              <td class="measurement" data-cm="70.5"></td>
+              <td class="measurement" data-cm="74"></td>
+              <td class="measurement" data-cm="77.5"></td>
+              <td class="measurement" data-cm="81"></td>
+              <td class="measurement" data-cm="84.5"></td>
+              <td class="measurement" data-cm="86.5"></td>
             </tr>
 
             <tr>
               <td>Chest Width</td>
-              <td class="measurement" data-in="19.50"></td>
-              <td class="measurement" data-in="21.00"></td>
-              <td class="measurement" data-in="22.50"></td>
-              <td class="measurement" data-in="24.00"></td>
-              <td class="measurement" data-in="26.00"></td>
-              <td class="measurement" data-in="28.00"></td>
-              <td class="measurement" data-in="30.00"></td>
+              <td class="measurement" data-cm="51"></td>
+              <td class="measurement" data-cm="55"></td>
+              <td class="measurement" data-cm="59"></td>
+              <td class="measurement" data-cm="63"></td>
+              <td class="measurement" data-cm="67"></td>
+              <td class="measurement" data-cm="71"></td>
             </tr>
 
           </tbody>
@@ -1321,8 +1318,8 @@
       </div>
 
       <p class="tolerance-note">
-        Garment measurements may vary by approximately ±0.5 in
-        (±1.27 cm) due to normal manufacturing tolerances.
+        Garment measurements may vary by approximately ±1 in
+        (±2.5 cm) due to normal manufacturing tolerances.
       </p>
 
     </div>
@@ -1481,17 +1478,16 @@
       "https://vaulren-api.jaiguptasydney.workers.dev/shipping";
 
     const VAULREN_PRODUCT_ID =
-      "6ab9ed529237deb945086922";
+      "6ac1aecba38cd9c66504b94a";
 
     const VAULREN_COLOURS = [
-      "Tan",
-      "Light Olive",
-      "Bone",
-      "White"
+      "White",
+      "Ecru",
+      "Butter",
+      "Pistachio"
     ];
 
     const VAULREN_SIZES = [
-      "XS",
       "S",
       "M",
       "L",
@@ -1501,14 +1497,14 @@
     ];
 
     const CART_STORAGE_KEY =
-      "vaulren_cart_v1";
+      "vaulren_cart_v2";
 
     const VAULREN_RETAIL_PRICE_CENTS =
       5495;
 
     let vaulrenProduct = null;
 
-    let selectedColour = "Tan";
+    let selectedColour = "White";
     let selectedSize = null;
     let selectedVariant = null;
 
@@ -1522,14 +1518,21 @@
     function splitVariantTitle(title) {
 
       const parts =
-        title.split("/").map(
-          part => part.trim()
-        );
+        String(title || "")
+          .split("/")
+          .map(part => part.trim());
 
-      return {
-        size: parts[0] || "",
-        colour: parts[1] || ""
-      };
+      const size =
+        parts.find(part =>
+          VAULREN_SIZES.includes(part)
+        ) || "";
+
+      const colour =
+        parts.find(part =>
+          VAULREN_COLOURS.includes(part)
+        ) || "";
+
+      return { size, colour };
     }
 
 
@@ -2142,7 +2145,7 @@
             variantId,
 
           name:
-            "Essential Oversized Tee",
+            "Heavy Oversized Tee",
 
           colour:
             selectedColour,
@@ -3183,23 +3186,23 @@
         .forEach(
           cell => {
 
-            const inches =
+            const cm =
               Number(
-                cell.dataset.in
+                cell.dataset.cm
               );
 
             if (
               unit === "cm"
             ) {
 
-              const cm =
-                inches * 2.54;
-
               cell.textContent =
                 cm.toFixed(1) +
                 " cm";
 
             } else {
+
+              const inches =
+                cm / 2.54;
 
               cell.textContent =
                 inches.toFixed(2) +
