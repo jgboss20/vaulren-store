@@ -1480,6 +1480,10 @@
     const VAULREN_PRODUCT_ID =
       "6ac1aecba38cd9c66504b94a";
 
+    // Customer-facing shipping is displayed in AUD.
+    // Printify currently returns this shop's shipping quote in USD.
+    const VAULREN_USD_TO_AUD = 1.44395;
+
     const VAULREN_COLOURS = [
       "White",
       "Ecru",
@@ -2847,22 +2851,25 @@
       }
 
       const code =
-        option.currency ||
-        currency ||
-        "USD";
-
-      const amount =
-        (cents / 100).toFixed(2);
+        String(
+          option.currency ||
+          currency ||
+          "USD"
+        ).toUpperCase();
 
       if (code === "USD") {
-        return `US$${amount}`;
+        const audAmount =
+          (cents / 100) *
+          VAULREN_USD_TO_AUD;
+
+        return `A$${audAmount.toFixed(2)} AUD`;
       }
 
       if (code === "AUD") {
-        return `A$${amount}`;
+        return `A$${(cents / 100).toFixed(2)} AUD`;
       }
 
-      return `${code} ${amount}`;
+      return `${code} ${(cents / 100).toFixed(2)}`;
     }
 
 
